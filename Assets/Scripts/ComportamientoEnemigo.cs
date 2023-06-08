@@ -8,11 +8,13 @@ enum Estado {
 [RequireComponent(typeof(NavMeshAgent))]
 internal sealed class ComportamientoEnemigo : MonoBehaviour {
 
-    [SerializeField] private Transform   _jugador;
+    [SerializeField] private MovimientoJugador _jugador;
     [SerializeField] private Transform[] _puntosDeRuta;
+    [SerializeField] private float _distanciaMínimaParaAtacar;
+    [SerializeField] private float _distanciaMáximaDeHuida;
 
-    private float _distanciaMínimaParaAtacar;
     private float _distanciaConJugador;
+    private bool _atacando, _huyendo;
     private int _iteradorDePuntos;
     private Estado _estadoActual;
     private NavMeshAgent _agente;
@@ -21,6 +23,8 @@ internal sealed class ComportamientoEnemigo : MonoBehaviour {
         _agente = GetComponent<NavMeshAgent>();
         DirigirseASiguientePunto();
     }
+
+    public void Perseguir() => _estadoActual = Estado.Perseguir;
 
     public void DirigirseASiguientePunto() {
         if (_estadoActual != Estado.Patrullar) return;
@@ -33,31 +37,46 @@ internal sealed class ComportamientoEnemigo : MonoBehaviour {
 
     public void Update() {
 
-        switch (_estadoActual) {
+        _distanciaConJugador = Vector3.Distance(transform.position, _jugador.transform.position);
+
+        if (_distanciaConJugador < _distanciaMínimaParaAtacar && _estadoActual != Estado.Atacar) {
+            ActualizarEstado(Estado.Atacar);
+        }
+
+        if (_estadoActual == Estado.Huir) {
+            if (_distanciaConJugador > _distanciaMáximaDeHuida && _estadoActual != Estado.Patrullar) {
+                ActualizarEstado(Estado.Patrullar);
+            }
+        }
+        
+    }
+
+    private void ActualizarEstado(Estado nuevoEstado) {
+        print(nuevoEstado.ToString());
+        switch (nuevoEstado) {
             case Estado.Patrullar:
-                Debug.Log("Estado: Patrullar");
+                DirigirseASiguientePunto();
             break;
             case Estado.Perseguir:
-                Debug.Log("Estado: Perseguir");
-
-                _agente.SetDestination(_jugador.position);
-
-                if (Vector3.Distance(transform.position, _jugador.position) < _distanciaMínimaParaAtacar) {
-                    
-                }
-
+                _agente.SetDestination(_jugador.transform.position);
             break;
             case Estado.Atacar:
-                Debug.Log("Estado: Atacar");
-                _agente.isStopped = true;
+                _jugador.RecibirDaño();
+                ActualizarEstado(Estado.Huir);
             break;
             case Estado.Huir:
-                Debug.Log("Estado: Huir");
-                
+                _agente.SetDestination(-_jugador.transform.position);
             break;
             default:
                 throw new System.Exception("Fatal: Estado no encontrado");
         }
+    }
+
+    private void OnDrawGizmos() {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, _distanciaMínimaParaAtacar);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, _distanciaMáximaDeHuida);
     }
 
 }
