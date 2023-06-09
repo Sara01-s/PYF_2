@@ -3,7 +3,9 @@ guid: 49e15beb57e575740a15f1c4f1b7e701
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - _jugador: {instanceID: 0}
+  - "_meshVisi\xF3n": {fileID: 3613567641014311022, guid: ce5eb00d6fba6744fb444abcc4e0193f, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

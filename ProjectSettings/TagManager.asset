@@ -5,14 +5,15 @@ TagManager:
   serializedVersion: 2
   tags:
   - PuntoDeRuta
+  - VisionEnemigo
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Puntos
   - Water
   - UI
-  - 
+  - Vision
   - 
   - 
   - 

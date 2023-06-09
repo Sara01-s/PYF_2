@@ -12,11 +12,12 @@ internal sealed class ComportamientoEnemigo : MonoBehaviour {
     [SerializeField] private Transform[] _puntosDeRuta;
     [SerializeField] private float _distanciaMínimaParaAtacar;
     [SerializeField] private float _distanciaMáximaDeHuida;
+    [SerializeField] private Mesh _meshVisión;
 
     private float _distanciaConJugador;
     private bool _atacando, _huyendo;
     private int _iteradorDePuntos;
-    private Estado _estadoActual;
+    [SerializeField] Estado _estadoActual;
     private NavMeshAgent _agente;
 
     private void Awake() {
@@ -24,7 +25,7 @@ internal sealed class ComportamientoEnemigo : MonoBehaviour {
         DirigirseASiguientePunto();
     }
 
-    public void Perseguir() => _estadoActual = Estado.Perseguir;
+    public void Perseguir() => ActualizarEstado(Estado.Perseguir);
 
     public void DirigirseASiguientePunto() {
         if (_estadoActual != Estado.Patrullar) return;
